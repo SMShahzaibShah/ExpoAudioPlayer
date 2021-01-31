@@ -16,6 +16,8 @@ export default function App() {
   const [current, setcurrent] = useState();
   const [getmax, setmax] = useState();
   const [getButton, setButton] = useState("play");
+  const [getVolume, setVolumne] = useState(100);
+  const [getSpeed, setSpeed] = useState(1);
 
   async function playSound() {
     console.log("Loading Sound");
@@ -50,7 +52,9 @@ export default function App() {
   }
 
   useEffect(() => {
-    playSound();
+    if (sound == null) {
+      playSound();
+    }
   }, []);
   const handlechange = (val) => {};
   {
@@ -72,17 +76,22 @@ export default function App() {
           position: "absolute",
         }}
       />
-      <View
+      <TouchableOpacity
+        activeOpacity={0.7}
+        onPress={() => {
+          sound.unloadAsync();
+        }}
         style={{
           marginTop: 5,
           backgroundColor: "#FFFFFF",
-          width: 55,
-          height: 55,
+          width: 50,
+          height: 50,
           borderRadius: 50,
           justifyContent: "center",
           top: 50,
           left: 40,
           position: "absolute",
+          borderWidth: 1,
         }}
       >
         <Text
@@ -96,7 +105,7 @@ export default function App() {
         >
           X
         </Text>
-      </View>
+      </TouchableOpacity>
       <Image
         source={require("./assets/playerRightTop.png")}
         style={{
@@ -229,14 +238,7 @@ export default function App() {
             console.log(current);
           }}
         >
-          <Image
-            source={require("./assets/forward5.png")}
-            style={
-              {
-                //width: 50
-              }
-            }
-          />
+          <Image source={require("./assets/forward5.png")} />
         </TouchableOpacity>
       </View>
       <View style={{ width: "90%" }}>
@@ -275,6 +277,131 @@ export default function App() {
             {msToHMS(getmax)}
           </Text>
         </View>
+      </View>
+      <Text
+        style={{
+          fontSize: 14,
+          color: "#A0A3B1",
+          width: "80%",
+          textAlign: "center",
+          margin: 5,
+        }}
+      >
+        Set Volume
+      </Text>
+      <View
+        style={{
+          width: "60%",
+          justifyContent: "space-between",
+          flexDirection: "row",
+        }}
+      >
+        <Slider
+          minimumValue={0}
+          maximumValue={100}
+          value={getVolume}
+          //disabled={sound == null ? true : false}
+          minimumTrackTintColor="#3F414E"
+          maximumTrackTintColor="#000000"
+          thumbTintColor="#3F414E"
+          onSlidingComplete={(val) => {
+            //console.log(val, "val is");
+            let vool = val / 100;
+            //console.log(getVolume, " before volume ");
+
+            sound.setVolumeAsync(vool);
+            setVolumne((vool * 100).toFixed(0));
+            //console.log(await sound.getStatusAsync());
+            //console.log(getVolume, " volume ");
+          }}
+          style={{
+            width: "90%",
+            alignSelf: "center",
+          }}
+        />
+        <Text
+          style={{
+            color: "#3F414E",
+            fontSize: 16,
+            alignSelf: "center",
+            justifyContent: "center",
+          }}
+        >
+          {getVolume}
+        </Text>
+      </View>
+      <Text
+        style={{
+          fontSize: 14,
+          color: "#A0A3B1",
+          width: "80%",
+          textAlign: "center",
+          margin: 5,
+        }}
+      >
+        Set Speed
+      </Text>
+      <View
+        style={{
+          width: "60%",
+          justifyContent: "space-between",
+          flexDirection: "row",
+        }}
+      >
+        <Slider
+          minimumValue={0.5}
+          maximumValue={2}
+          value={getSpeed}
+          //disabled={sound == null ? true : false}
+          minimumTrackTintColor="#3F414E"
+          maximumTrackTintColor="#000000"
+          thumbTintColor="#3F414E"
+          onSlidingComplete={async (val) => {
+            //console.log(val, "val is");
+            let vool = val;
+            //console.log(getVolume, " before volume ");
+            if (vool >= 0.5 && vool < 0.75) {
+              sound.setRateAsync(0.5);
+              setSpeed(0.5);
+            } else if (vool >= 0.75 && vool < 1.0) {
+              sound.setRateAsync(0.75);
+              setSpeed(0.75);
+            } else if (vool >= 1.0 && vool < 1.25) {
+              sound.setRateAsync(1.0);
+              setSpeed(1.0);
+            } else if (vool >= 1.25 && vool < 1.5) {
+              sound.setRateAsync(1.5);
+              setSpeed(1.5);
+            } else if (vool >= 1.5 && vool < 2) {
+              sound.setRateAsync(2);
+              setSpeed(2);
+            } else {
+              sound.setRateAsync(1);
+              setSpeed(2);
+            }
+            //0.5 0.75 1.0 1.25 1.5 2
+            //1 2 3 4 5 6
+
+            // sound.setVolumeAsync(vool);
+
+            console.log(await sound.getStatusAsync());
+            //console.log(getVolume, " volume ");
+          }}
+          style={{
+            width: "90%",
+            alignSelf: "center",
+          }}
+        />
+        <Text
+          style={{
+            color: "#3F414E",
+            fontSize: 16,
+            alignSelf: "center",
+            justifyContent: "center",
+          }}
+        >
+          {getSpeed}
+        </Text>
       </View>
       {/**
       <View
@@ -324,10 +451,11 @@ export default function App() {
         />
                  
       </View>
-      */}
+      
       <View style={{ position: "absolute", bottom: 10 }}>
         <Button title="Play Sound" onPress={playSound} />
       </View>
+      */}
     </View>
   );
 }
